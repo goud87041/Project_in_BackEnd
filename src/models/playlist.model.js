@@ -14,7 +14,7 @@ const playListSchema = new Schema({
         type  : Schema.Types.ObjectId ,
         ref : "Video"
     }],
-    onwer : {
+    onwer : {  //play list onwer
         type : Schema.Types.ObjectId ,
         ref  : "User"
     }
