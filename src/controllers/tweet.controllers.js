@@ -2,14 +2,18 @@ import mongoose, { isValidObjectId } from "mongoose"
 import {Tweet} from "../models/tweets.model.js"
 import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
+// import {ApiResponse} from "../utils/ApiResponse.js"
+import { ApiResponse } from "../utils/ApiRespone.js"
+
 import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
-    const {content} = req.body
+    const { content } = req.body
 
     const user = req.user?._id
+    console.log(content);
+    
 
     if(!user){
         throw new ApiError(401,"unauthorized request")
@@ -38,21 +42,21 @@ const createTweet = asyncHandler(async (req, res) => {
 
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweets
-    const tweetId = req.params
+    // const {tweetId} = req.params
     const user = req.user?._id
 
     if(!user){
         throw new ApiError(401 , "unauthoried user")
     }
 
-    if(!tweetId){
-        throw new ApiError(400,"tweet is not found ")
-    }
+    // if(!tweetId){
+    //     throw new ApiError(400,"tweet is not found ")
+    // }
 
-    const userTweet = await Tweet.findOne(
+    const userTweet = await Tweet.find(
         {
             owner : user,
-            _id : tweetId
+            // _id : tweetId
         }
     )
 
@@ -73,10 +77,10 @@ const getUserTweets = asyncHandler(async (req, res) => {
 const updateTweet = asyncHandler(async (req, res) => {
     //TODO: update tweet
 
-   const  {content}  = req.body
+   const  { content }  = req.body
 
    const user = req.user?._id
-   const {tweetId} = req.params
+   const { tweetId } = req.params
 
    if(!user){
         throw new ApiError(401 , "unauthoried user")

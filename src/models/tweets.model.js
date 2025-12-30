@@ -7,7 +7,7 @@ const tweetSchema = new Schema({
     content : {
         type :String , 
         require : true
-    },
+    },   
     owner : {
         type : Schema.Types.ObjectId,
         ref : "User"
