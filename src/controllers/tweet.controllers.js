@@ -80,7 +80,7 @@ const updateTweet = asyncHandler(async (req, res) => {
    const  { content }  = req.body
 
    const user = req.user?._id
-   const { tweetId } = req.params
+   const tweetId  = req.params
 
    if(!user){
         throw new ApiError(401 , "unauthoried user")
@@ -119,7 +119,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 const deleteTweet = asyncHandler(async (req, res) => {
     //TODO: delete tweet
     const owner = req.user?._id
-    const tweetId = req.params
+    const {tweetId} = req.params
 
     if(!owner){
         throw new ApiError(401 , "unauthoried user")
@@ -147,9 +147,6 @@ const deleteTweet = asyncHandler(async (req, res) => {
             "tweet DElETE successfully"
         )
     )
-
-
-
 })
 
 export {
