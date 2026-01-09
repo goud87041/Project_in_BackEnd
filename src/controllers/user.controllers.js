@@ -44,6 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   console.log(User);
+  
 
 
   const isUserExsited = await User.findOne({
