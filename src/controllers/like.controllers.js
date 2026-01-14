@@ -13,7 +13,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     const userId = req.user?._id 
     // Boolean videoLikeToggle = false ;
 
-    if(!userId || !videoId ){
+    if(!userId || !videoId ){   
         throw new ApiError(400, "video not found or not Authorized to like")
     }
 

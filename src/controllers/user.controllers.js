@@ -123,7 +123,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // console.log("this is you req.body  " + req.body);
 
-  console.log(email);
+  console.log( "this your email :",email);
 
 
   if (!(userName || email)) {
@@ -401,9 +401,11 @@ const updateUserCouverImage = asyncHandler(async (req, res) => {
 
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
+  console.log("🔥 NEW CONTROLLER HIT 🔥", req.params);
+
   const { username } = req.params
 
-  if (!username?.trime()) {
+  if (!username) {
     throw new ApiError(400, "user name is missing")
   }
 
