@@ -1,9 +1,9 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import { PlayList } from "../models/playlist.model.js"
 import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
+import { ApiResponse } from "../utils/ApiRespone.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
-import { json } from "express"
+import { json } from "express"  
 
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -50,6 +50,9 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         }
     )
 
+    console.log(getPlayLists);
+    
+
     return res.status(202).json(
         new ApiResponse(
             202,
@@ -61,19 +64,27 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 })
 
 const getPlaylistById = asyncHandler(async (req, res) => {
-    const { playlistId } = req.params
+    const { playListId } = req.params
     //TODO: get playlist by id
     const user = req.user?._id
+
+
 
     if (!user) {
         throw new ApiError(401, "unauthorized request")
     }
 
+    console.log(req.params);
+    
+
     const playList = await PlayList.findOne(
         {
-            owner: user,
-            _id: playlistId
+            onwer: user,
+            _id: playListId
         })
+
+        console.log(playList);
+        
 
     if (playList.length == 0) {
         throw new ApiError(404, "playList not found")
@@ -147,7 +158,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const playList = await PlayList.findOneAndUpdate(
         {
             _id: playlistId,
-            owner: user
+            videos : videoId
         },
         {
             $pull: { videos: videoId }
@@ -168,7 +179,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 })
 
 const deletePlaylist = asyncHandler(async (req, res) => {
-    const { playlistId } = req.params
+    const { playListId } = req.params
     // TODO: delete playlist
     const user = req.user?._id
 
@@ -176,20 +187,20 @@ const deletePlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(404, "unauthorized user")
     }
 
-    if (!playlistId) {
+    if (!playListId) {
         throw new ApiError(400, "playList is missing")
     }
 
     const deletePlaylist = await PlayList.findOneAndDelete(
         {
-            _id: playlistId,
-            owner: user
+            _id: playListId,
+            onwer: user
         }
     )
 
-    if (!deletePlaylist) {
-        throw new ApiError(401, "playList not found or access denied")
-    }
+    // if (!deletePlaylist) {
+    //     throw new ApiError(401, "playList not found or access denied")
+    // }
 
 
     return res.status(201).json(
@@ -201,7 +212,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {
-    const { playlistId } = req.params
+    const { playListId } = req.params
     const { name, description } = req.body
     //TODO: update playlist
 
@@ -211,14 +222,20 @@ const updatePlaylist = asyncHandler(async (req, res) => {
         throw new ApiError(401, "unauthorized user")
     }
 
-    if(!playlistId || !name || !description){
+    console.log(req.params);
+    
+
+    console.log("name",name + "description" , description );
+    
+
+    if(!playListId || !name || !description){
         throw new ApiError(400 ,"playList , name or description is required")
     }
 
     const updtPlayList = await PlayList.findByIdAndUpdate(
         {
-            _id : playlistId,
-            owner : user
+            _id : playListId,
+            onwer : user
         },
         {
             name ,

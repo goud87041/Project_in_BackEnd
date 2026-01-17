@@ -103,8 +103,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
         return res
                 .status(201)
-                .json(new ApiResponse(201, {liked : ture},"like Tweet successfully"))
-
+                .json(new ApiResponse(201, {liked : true},"like Tweet successfully"))
     }
 }
 )
@@ -134,6 +133,9 @@ const getLikedVideos = asyncHandler(async (req, res) => {
             createdAt : -1
         }
     )
+
+    console.log(allLikedVideo);
+    
 
     return res
             .status(200)

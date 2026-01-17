@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const playListSchema = new Schema({
     name : {
-        type : String ,
+        type : String ,  
         require : true
     },
     description  :{

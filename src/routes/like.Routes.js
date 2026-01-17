@@ -9,6 +9,6 @@ router.use(verifyJWT)
 router.route("/toggel/v/:videoId").post(toggleVideoLike)
 router.route("/toggel/c/:commentId").post(toggleCommentLike)
 router.route("/toggel/t/:tweetId").post(toggleTweetLike)
-router.route("/videos").get(getLikedVideos)
+router.route("/allLikevideos").get(getLikedVideos)
 
 export default router  
