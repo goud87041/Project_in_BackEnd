@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import { Comment } from "../models/comments.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiRespone.js"
@@ -12,13 +13,13 @@ const getVideoComments = asyncHandler(async (req, res) => {
         throw new ApiError(404, "video not foundr")
     }
 
-    const skip = (Number(page) - 1 * Number(limit))
+    const skip = (Number(page) - 1) * Number(limit)
 
     const comments = await Comment
         .find({ video: videoId })
-    skip(skip)
+        .skip(skip)
         .sort({ createAt: -1 })
-        .populate("User", "userName avtar")
+        .populate("owner", "userName avtar")
 
     const totalComments = await Comment.countDocuments({ video: videoId })
 
@@ -30,24 +31,29 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 
 
-})
+})    
 
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
-    const { commentText } = req.body
+    const  { content }  = req.body
     const {videoId} = req.params
     const userId = req.user?._id
 
-    if (!commentText || !videoId || !userId) {
+    console.log("here is ", content);
+    console.log();
+    
+    
+
+    if (!content || !videoId || !userId) {
         throw new ApiError(500, "required data are missing")
     }
 
     const comment = await Comment
         .create(
             {
-                commentText,
+                content,
                 video :videoId,
-                user :userId
+                owner :userId
             })
 
     if (!comment) {
@@ -60,44 +66,48 @@ const addComment = asyncHandler(async (req, res) => {
 })
 
 const updateComment = asyncHandler(async (req, res) => {
-    // TODO: update a comment
-
-    const {commentText} = req.body
-    const {commentId} = req.params
+    const { commentText } = req.body
+    const { commentId } = req.params
     const userId = req.user?._id
 
-    if(!commentId || !commentText ){
-        throw new ApiError(404 ,"required Data is missing")
+    if (!commentId || !commentText) {
+        throw new ApiError(400, "Required data is missing")
+    }
+
+    if (!userId) {
+        throw new ApiError(401, "User not authenticated")
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(commentId)) {
+        throw new ApiError(400, "Invalid comment ID")
     }
 
     const upComment = await Comment.findOneAndUpdate(
-        {_id : commentId , user : userId},
-        {$set : {commentText}},
-        { new : true}
+        { _id: commentId, owner: userId },
+        { $set: { content: commentText } },
+        { new: true }
     )
 
-    if(!upComment){
-        throw new ApiError(500 ,"comment not found or not Authorized")
-    }
+    // if (!upComment) {
+    //     throw new ApiError(403, "Comment not found or not authorized")
+    // }
 
-    return res
-    .status(201)
-    .json(new ApiResponse(201 , upComment ,"update Comment Successfully"))
-
-
-
+    return res.status(200).json(
+        new ApiResponse(200, upComment, "Comment updated successfully")
+    )
 })
+
 
 const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
 
     const {commentId} = req.params 
-    const { userId } = req.user?._id
+    // const { userId } = req.user?._id
 
     const comment = await Comment.findOneAndDelete(
         {
             _id : commentId,
-            user : userId
+            // user : userId
         }
     )
 

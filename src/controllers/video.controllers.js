@@ -146,10 +146,9 @@ const getVideoById = asyncHandler(async (req, res) => {
             owner : user,
             _id : videoId
         },
-        {
-            view,
-            
-        }
+        // {
+        //     views,
+        // }
     )
 
     if(!findVideo){
@@ -174,6 +173,9 @@ const updateVideo = asyncHandler(async (req, res) => {
     if(!user ){
         throw new ApiError(401,"unauthorized user")
     }
+
+    console.log("this is video id in the video controller : ",videoId.length);
+    
 
     const updatedVideo = await Video.findOneAndUpdate(  
         {
@@ -243,7 +245,10 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         throw ApiError(404, "video not found")
     }
 
-    const video = await Video.findById(videoId)
+    const video = await Video.findOne({
+        _id : videoId,
+        owner : user
+    })
 
     if(!video){
         throw ApiError(404, " video not found in DB")
@@ -251,8 +256,8 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
 
     // const isPublishStatusActive = Video.findById()
 
-    video.isPublish = !video.isPublish
-    await Video.bulkSave({validateBeforeSave : false})
+    video.isPublished = !video.isPublished
+   await video.save()
 
     return res.status(201)
     .json(

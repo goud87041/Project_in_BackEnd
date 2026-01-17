@@ -2,13 +2,13 @@
 import mongoose, {isValidObjectId} from "mongoose"
 // import {Like} from "../models/like.model.js"
 import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
+import {ApiResponse} from "../utils/ApiRespone.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 import { LikeBy } from "../models/likes.model.js"
-import { Comment } from "../models/comments.model.js"
+// import { Comment } from "../models/comments.model.js"
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
-    const {videoId} = req.params
+    const {videoId} = req.params  
     //TODO: toggle like on video
     const userId = req.user?._id 
     // Boolean videoLikeToggle = false ;
