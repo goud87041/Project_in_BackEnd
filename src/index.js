@@ -1,36 +1,36 @@
-import dotenv from "dotenv";
-import connectDB from "../src/db/dbConn.js";
-import { app } from "../src/app.js";
+// import dotenv from "dotenv";
+// import connectDB from "../src/db/dbConn.js";
+// import { app } from "../src/app.js";
 
-dotenv.config();
+// dotenv.config();
 
-connectDB();
+// connectDB();
 
-export default app;
-
-
+// export default app;
 
 
-// import dotenv from "dotenv" ; 
-// import connectDB from "./db/dbConn.js";
-// import { app } from "./app.js";
-// // import log from "cros/common/logger.js";
 
-// dotenv.config({
-//     path : './'
-// })
 
-// connectDB()
-// .then(()=>{
-//     app.listen(process.env.PORT || 8000,()=>{
-//         console.log(`server is running on the ${process.env.PORT}`);
+import dotenv from "dotenv" ; 
+import connectDB from "./db/dbConn.js";
+import { app } from "./app.js";
+// import log from "cros/common/logger.js";
+
+dotenv.config({
+    path : './'
+})
+
+connectDB()
+.then(()=>{
+    app.listen(process.env.PORT || 8000,()=>{
+        console.log(`server is running on the ${process.env.PORT}`);
         
-//     })
-// })
-// .catch((error)=>{
-// console.log(error);
+    })
+})
+.catch((error)=>{
+console.log(error);
 
-// })
+})
 
 
 
