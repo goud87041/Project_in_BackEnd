@@ -4,6 +4,7 @@ import {
   deleteVideo,
   getAllVideos,
   getVideoById,
+  getVideos,
   publishAVideo,
   togglePublishStatus,
   updateVideo
@@ -15,7 +16,7 @@ const router = Router()
 router.use(verifyJWT)
 
 router.route("/")
-  .get(getAllVideos)
+ 
   .post(
     upload.fields([
       { name: "videoFile", maxCount: 1 },
@@ -23,8 +24,13 @@ router.route("/")
     ]),
     publishAVideo
   )
+  .get(getVideos)
+
+  router.route("/allVideos")
+  .get(getAllVideos)
 
 router.route("/:videoId")
+ 
   .get(getVideoById)
   .delete(deleteVideo)
   .patch(upload.single("thumbnail"), updateVideo)

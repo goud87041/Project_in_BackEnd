@@ -13,6 +13,8 @@ const createTweet = asyncHandler(async (req, res) => {
 
     const user = req.user?._id
     console.log(content);
+
+
     
 
     if(!user){
@@ -21,6 +23,8 @@ const createTweet = asyncHandler(async (req, res) => {
     if(!content){
         throw new ApiError(400,"content required")
     }
+
+    // const tweet = content.trim()
 
     const createtweet = await Tweet.create({
         owner : user,
@@ -80,7 +84,7 @@ const updateTweet = asyncHandler(async (req, res) => {
    const  { content }  = req.body
 
    const user = req.user?._id
-   const tweetId  = req.params
+   const {tweetId}  = req.params
 
    if(!user){
         throw new ApiError(401 , "unauthoried user")

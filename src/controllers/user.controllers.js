@@ -56,9 +56,15 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
 
+console.log("this is on line 56 in  controller ", req.files);
 
-  const avatarLocalPath = await req.files?.avtar[0]?.path;
+if (!req.files || !req.files.avtar || req.files.avtar.length === 0) {
+  throw new ApiError(400, "Avatar file is required");
+}
+
+  const avatarLocalPath =  req.files?.avtar[0]?.path;
   console.log(req.files);
+
 
   // const coverImageLocalPath = req.files?.coverImage[0]?.path
 
@@ -72,19 +78,19 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(408, "Avatar file is required")
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath)
+  const avatarUrl = await uploadOnCloudinary(avatarLocalPath)
   const coverImg = await uploadOnCloudinary(coverImageLocalPath)
 
-  console.log(avatar);
+  console.log(avatarUrl);
 
 
-  if (!avatar) {
+  if (!avatarUrl) {
     throw new ApiError(400, "Avatar file is required")
   }
 
   const user = await User.create({
     fullname,
-    avtar: avatar.url,
+    avtar: avatarUrl.url,
     coverImage: coverImg?.url || "",
     userName: userName.toLowerCase(),
     email,
@@ -292,8 +298,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   }
 
   return res
-    .status(400)
-    .json(new ApiResponse(400, { user }, "get currect user successfully"))
+    .status(200)
+    .json(new ApiResponse(200 , { user }, "get currect user successfully"))
 
 })
 
@@ -400,7 +406,7 @@ const updateUserCouverImage = asyncHandler(async (req, res) => {
 
 
 })
-
+  
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
   console.log("🔥 NEW CONTROLLER HIT 🔥", req.params);
@@ -411,59 +417,69 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     throw new ApiError(400, "user name is missing")
   }
 
-  const channel = await User.aggregate([
-    {
-      $match: {
-        username: username?.toLowerCase()
-      }
-    },
-    {
-      $lookup: {
-        from: "subscriptions",
-        localField: "_id",
-        foreignField: "channal",
-        as: "subscribers"
-      }
-    },
-    {
-      $lookup: {
-        from: "subscribers",
-        localField: " _id",
-        foreignField: " subscriber",
-        as: "subscribeTo"
-      }
-    },
+  // console.log(req.params);
+  
 
-    {
-      $addFields: {
-        subscribersCount: {
-          $size: "$subscribers",
-        },
-        channelsSubscribsToCount: {
-          $size: "$subscribeTo"
-        },
-        isSubscribed: {
-          $cond: {
-            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
-            then: true,
-            else: false
-          }
+const channel = await User.aggregate([
+  {
+    $match: {
+      _id : new mongoose.Types.ObjectId(username)
+    }
+  },
+  {
+    $lookup: {
+      from: "subscriptions",
+      localField: "_id",
+      foreignField: "channel",
+      as: "subscribers"
+    }
+  },
+  {
+    $lookup: {
+      from: "subscriptions",
+      localField: "_id",
+      foreignField: "subscriber",
+      as: "subscribeTo"
+    }
+  },
+  {
+    $addFields: {
+      subscribersCount: {
+        $size: "$subscribers"
+      },
+      channelsSubscribsToCount: {
+        $size: "$subscribeTo"
+      },
+      isSubscribed: {
+        $cond: {
+          if: {
+            $in: [
+              new mongoose.Types.ObjectId(req.user._id),
+              "$subscribers.subscriber"
+            ]
+          },
+          then: true,
+          else: false
         }
       }
-    },
-    {
-      $project: {
-        fullName: 1,
-        userName: 1,
-        subscribersCount: 1,
-        channelsSubscribsToCount: 1,
-        isSubscribed: 1,
-        avatr: 1,
-        coverImage: 1,
-        email: 1
-      }
     }
-  ])
+  },
+  {
+    $project: {
+      fullName: 1,
+      username: 1,
+      subscribersCount: 1,
+      channelsSubscribsToCount: 1,
+      isSubscribed: 1,
+      avatar: 1,
+      coverImage: 1,
+      email: 1
+    }
+  }
+]);
+
+
+
 
   if (!channel?.length) {
     throw new ApiError(404, " channel  does not exists")

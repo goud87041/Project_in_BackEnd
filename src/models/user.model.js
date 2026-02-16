@@ -44,6 +44,14 @@ const userSchema = new Schema({
         }
     ],
 
+    role: {
+        type: String,
+        enum: ["USER", "ADMIN", "CREATOR"],
+        default: "USER",
+        required: true
+    },
+
+
     refreshToken: {
         type: String
     }
@@ -51,16 +59,16 @@ const userSchema = new Schema({
 }, { timestamps: true })
 
 
-userSchema.pre("save",  async function () {
-    if (!this.isModified("password")) return 
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return
 
     this.password = await bcrypt.hash(this.password, 10)
-    
+
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
     console.log(this.password);
-    
+
     return await bcrypt.compare(password, this.password) //this methode  return boolean value
 }
 

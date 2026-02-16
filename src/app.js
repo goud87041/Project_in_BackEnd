@@ -32,6 +32,7 @@ import commentRouter from "./routes/comment.Routes.js"
 import likeRouter from "./routes/like.Routes.js"
 import playList from "./routes/playList.Routes.js"
 import helthCheck from "./routes/helthCheck.Routes.js"
+import subscribe from "./routes/subscription.Routes.js"
 
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/tweets", tweetRouter)
@@ -40,5 +41,6 @@ app.use("/api/v1/comment", commentRouter)
 app.use("/api/v1/like", likeRouter)
 app.use("/api/v1/playList", playList)
 app.use("/api/v1/helthCheck",helthCheck)
+app.use("/api/v1/subscribe",subscribe)
 
 export { app }

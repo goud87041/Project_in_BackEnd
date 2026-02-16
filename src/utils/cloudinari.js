@@ -1,48 +1,68 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs"
-// import { asyncHandler } from "./asyncHandler";
+import fs from "fs";
 
-// import { v2 as cloudinary } from 'cloudinary';
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
- 
+const uploadOnCloudinary = async (localFilePath) => {
+  try {
+    if (!localFilePath) return null;
 
-    // Configuration
-    cloudinary.config({ 
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-        api_key: process.env.CLOUDINARY_API_KEY, 
-        api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
-    });
+//     const response = async function uploadVideos (){
+//         try {
+//             const result = await new Promise((resolve,reject)=>{
+//                 cloudinary.uploader.upload_large(localFilePath,{
+//                     resource_type : "video"
+//                 },
+//                 (error,result)=>{
+//                     if(error){
+//                         reject(error)
+//                     }
+//                     resolve(result)
+//                 }
+//             )
+//         })
+//         console.log(result);
+        
+//     } catch (error) {
+//         console.log(error); 
+        
+//     }
+// }
+// console.log("Uploading:", localFilePath); 
+// response()
+// console.log("✅ Upload Success:", response);
 
 
-    const uploadOnCloudinary = async (localFilePath) => {
-    try {
-        if (!localFilePath) return null
+    const response = await cloudinary.uploader.upload(
+      localFilePath,
+      {
+        resource_type: "auto", // let cloudinary detect video
+        timeout: 600000,       // 10 min timeout for large video
+      }
+    );
 
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
-        })
 
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath)
-        }
-
-        return response
-
-    } catch (error) {
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath)
-        }
-        console.error("Cloudinary upload failed:", error)
-        return null
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
     }
-}
 
-    // const deleteFromCludinary = async(localFilePath)=>{
-    //     if(!localFilePath) return
+    return response;
 
-    //     await cloudinary
+  } catch (error) {
 
-    // }
-    
-     
-    export {uploadOnCloudinary}
+    console.error("❌ Cloudinary upload failed FULL ERROR:", error);
+
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath);
+    }
+
+    return null;
+  }
+};
+
+
+export { uploadOnCloudinary };

@@ -37,7 +37,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 })
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
-    const { userId } = req.params
+    const  userId  = req.user?._id
     //TODO: get user playlists
 
     if (!userId) {
@@ -64,41 +64,45 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 })
 
 const getPlaylistById = asyncHandler(async (req, res) => {
-    const { playListId } = req.params
-    //TODO: get playlist by id
-    const user = req.user?._id
+  const { playListId } = req.params
+  const user = req.user?._id
 
+  if (!user) {
+    throw new ApiError(401, "unauthorized request")
+  }
 
+  if (!playListId) {
+    throw new ApiError(400, "playlist id is required")
+  }
 
-    if (!user) {
-        throw new ApiError(401, "unauthorized request")
+  const playList = await PlayList.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(playListId),
+        onwer: new mongoose.Types.ObjectId(user)
+      }
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "videos",   // ✅ array in playlist
+        foreignField: "_id",    // ✅ _id in videos
+        as: "videos"
+      }
     }
+  ])
 
-    console.log(req.params);
-    
+  if (playList.length === 0) {
+    throw new ApiError(404, "playlist not found")
+  }
 
-    const playList = await PlayList.findOne(
-        {
-            onwer: user,
-            _id: playListId
-        })
-
-        console.log(playList);
-        
-
-    if (playList.length == 0) {
-        throw new ApiError(404, "playList not found")
-    }
-
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            playList,
-            "playList featch successfully"
-        )
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      playList[0], // return single playlist
+      "playlist fetched successfully"
     )
-
-
+  )
 })
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {

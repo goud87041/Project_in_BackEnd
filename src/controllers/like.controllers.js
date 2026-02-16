@@ -20,7 +20,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     // lets create like 
     const exsistingLike = await LikeBy.findOne({
         video : videoId,
-        LikeBy : userId
+        likeBy : userId
     })
 
     if(exsistingLike){
@@ -32,7 +32,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
     }else{
         await LikeBy.create({
             video : videoId,
-            LikeBy : userId
+            likeBy : userId
         })
 
         return res
@@ -53,7 +53,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 
     const isLikeOnCommentExsist = await LikeBy.findOne({
         comment : commentId,
-        LikeBy : userId
+        likeBy : userId
     })
 
     if(isLikeOnCommentExsist){
@@ -66,7 +66,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
                 .json(new ApiResponse(201,{liked : false}, "unlike comment Successfully"))
     }else{
         await LikeBy.create({
-            LikeBy : userId,
+            likeBy : userId,
             comment : commentId
         })
 
@@ -84,7 +84,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
     const isLikeExistOnTweet = await LikeBy.findOne({ 
         tweet : tweetId,
-        LikeBy : userId
+        likeBy : userId
     })
 
     if(isLikeExistOnTweet){
@@ -97,7 +97,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
                 .json(new ApiResponse(200, {liked : false},"unlike tweet Successfully"))
     }else{
         await LikeBy.create({
-            LikeBy : userId,
+            likeBy : userId,
             tweet : tweetId
         })
 
@@ -109,40 +109,49 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 )
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-    //TODO: get all liked videos
+    const userId = req.user?._id;
 
-    const userId = req.user?._id
-
-    if(!userId){
-        throw new ApiError(404, "unauthorized request")
+    if (!userId) {
+        throw new ApiError(404, "unauthorized request");
     }
 
     const allLikedVideo = await LikeBy.find({
-            likeBy : userId,
-            video : {$ne : null}
+        likeBy: userId,
+        video: { $ne: null }   // fixed
     })
     .populate({
-        path : "video",
-        populate : {
+        path: "video",
+        populate: {
             path: "owner",
-            select : "username fullName avtar"
+            select: "username fullName avtar"
         }
     })
-    .sort(
-        {
-            createdAt : -1
-        }
-    )
+    .sort({ createdAt: -1 });
 
-    console.log(allLikedVideo);
-    
+    const filteredVideos = allLikedVideo.filter(
+    item => item.video !== null
+);
 
-    return res
-            .status(200)
-            .json(200,{allLikedVideo},"all Liked Video featch successfully")
+    // ✅ If no liked videos found
+    if (!filteredVideos || filteredVideos.length === 0) {
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                null,
+                "No liked videos found"
+            )
+        );
+    }
 
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            filteredVideos,
+            "All liked videos fetched successfully"
+        )
+    );
+});
 
-})
 
 export {
     toggleCommentLike,
