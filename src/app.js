@@ -4,13 +4,7 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
-if (process.env.NODE_ENV == "production") {
-    connectDB().then(() => {
-        app.listen(process.env.PORT || 8000, () => {
-            console.log("Server running locally");
-        });
-    });
-}
+
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
