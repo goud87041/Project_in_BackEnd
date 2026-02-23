@@ -8,7 +8,7 @@ const app = express()
 
 
 
-import cors from "cors";
+// import cors from "cors";
 
 app.use(cors({
   origin: "https://front-end-project-for-back-end-l2iz.vercel.app",
