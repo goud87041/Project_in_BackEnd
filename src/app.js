@@ -8,7 +8,7 @@ const app = express()
 
 
 
-app.use(cors({
+app.use("*", cors({
     origin: process.env.CROS_ORIGIN,
     credentials: true
 }));
