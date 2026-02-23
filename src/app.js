@@ -8,10 +8,18 @@ const app = express()
 
 
 
+import cors from "cors";
+
 app.use(cors({
-    origin: process.env.CROS_ORIGIN,
-    credentials: true
+  origin: "https://front-end-project-for-back-end-l2iz.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
+
+// app.options("*", cors({
+//   origin: "https://front-end-project-for-back-end-l2iz.vercel.app",
+//   credentials: true
+// }));
 
 
 
