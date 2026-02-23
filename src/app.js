@@ -6,8 +6,10 @@ const app = express()
 
 
 
+
+
 app.use(cors({
-    origin: "*",
+    origin: process.env.CROS_ORIGIN,
     credentials: true
 }));
 
