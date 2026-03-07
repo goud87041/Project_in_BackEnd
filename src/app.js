@@ -11,9 +11,9 @@ const app = express()
 // import cors from "cors";
 
 app.use(cors({
-  origin: ["https://front-end-project-for-back-end-l2iz.vercel.app", "http://localhost:4000"],
+  origin: process.env.CORS_ORIGIN || "http://localhost:4000",
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 }));
 
 // app.options("*", cors({
